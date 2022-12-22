@@ -2,7 +2,6 @@ import { styled } from '..';
 
 export const Container = styled('main', {
   display: 'flex',
-  gap: '3rem',
   width: '100%',
   maxWidth: 'calc(1180px + ((100vw - 1180px) / 2))',
   marginLeft: 'auto',
@@ -14,7 +13,6 @@ export const Product = styled('a', {
   borderRadius: 8,
   cursor: 'pointer',
   position: 'relative',
-  padding: '0.25rem',
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
