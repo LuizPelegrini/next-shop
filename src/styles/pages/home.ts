@@ -20,6 +20,8 @@ export const Product = styled('a', {
 
   img: {
     objectFit: 'cover',
+    width: '100%',
+    height: 'auto'
   },
 
   footer: {
