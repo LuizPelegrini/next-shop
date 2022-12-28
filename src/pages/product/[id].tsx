@@ -18,8 +18,6 @@ interface ProductProps {
 }
 
 export default function Product({ product }: ProductProps) {
-
-
   return (
     <Container>
       <ImageContainer>
@@ -47,7 +45,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   return {
     paths,
-    fallback: false
+    fallback: 'blocking'
   }
 };
 
