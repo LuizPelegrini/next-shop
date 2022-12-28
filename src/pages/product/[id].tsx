@@ -1,5 +1,7 @@
+import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from "next/image";
+import { useState } from "react";
 import Stripe from "stripe";
 import { stripe } from "../../lib/stripe";
 import { Container, ImageContainer, ProductDetails } from "../../styles/pages/product";
@@ -19,8 +21,27 @@ interface ProductProps {
 }
 
 export default function Product({ product }: ProductProps) {
-  function handleCreateCheckoutSession() {
-    console.log(product.priceId);
+  const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false);
+
+  async function handleCreateCheckoutSession() {
+    try {
+      setIsCreatingCheckoutSession(true);
+
+      const response = await axios.post('/api/createCheckoutSession', {
+        priceId: product.priceId
+      });
+
+      const { checkoutURL } = response.data;
+
+      // redirect user to Stripe checkout page
+      window.location.href = checkoutURL;
+    } catch (error: any) {
+      // TODO: integrate with observability tool (Datadog / Sentry)
+      alert('Failed on creating checkout session');
+      console.log(error.stack);
+
+      setIsCreatingCheckoutSession(false);
+    }
   }
 
   return (
@@ -35,7 +56,12 @@ export default function Product({ product }: ProductProps) {
 
         <p>{product.description}</p>
 
-        <button onClick={handleCreateCheckoutSession}>Buy</button>
+        <button
+          disabled={isCreatingCheckoutSession}
+          onClick={handleCreateCheckoutSession}
+        >
+          Buy
+        </button>
       </ProductDetails>
     </Container>
   );

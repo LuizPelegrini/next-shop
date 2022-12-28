@@ -2,8 +2,16 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { stripe } from "../../lib/stripe";
 
 export default async function handler(request: NextApiRequest, response: NextApiResponse){
-  const priceId = 'price_1MHkvpEZSTYQLJJm7MJRlwlz';
+  if(request.method !== 'POST') {
+    return response.status(405).json({ error: 'Method not allowed.'});
+  }
 
+  const { priceId } = request.body;
+  if(!priceId) {
+    return response.status(400).json({ error: 'Price not provided.' })
+  }
+
+  // Urls to be used by Stripe for success and cancel operations
   const successURL = `${process.env.NEXT_APP_DOMAIN}/success`;
   const cancelURL = `${process.env.NEXT_APP_DOMAIN}/`;
 
