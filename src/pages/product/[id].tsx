@@ -11,6 +11,7 @@ interface Product {
   imageUrl: string;
   price: string;
   description: string;
+  priceId: string;
 }
 
 interface ProductProps {
@@ -18,6 +19,10 @@ interface ProductProps {
 }
 
 export default function Product({ product }: ProductProps) {
+  function handleCreateCheckoutSession() {
+    console.log(product.priceId);
+  }
+
   return (
     <Container>
       <ImageContainer>
@@ -30,7 +35,7 @@ export default function Product({ product }: ProductProps) {
 
         <p>{product.description}</p>
 
-        <button>Buy</button>
+        <button onClick={handleCreateCheckoutSession}>Buy</button>
       </ProductDetails>
     </Container>
   );
@@ -79,7 +84,8 @@ export const getStaticProps: GetStaticProps<any, { id: string }> = async ({ para
         name: product.name,
         imageUrl: product.images[0],
         price: formattedPrice,
-        description: product.description
+        description: product.description,
+        priceId: priceInCents.id
       }
     },
     revalidate: 60 * 60 * 1, // revalidate cache every 1 hour
