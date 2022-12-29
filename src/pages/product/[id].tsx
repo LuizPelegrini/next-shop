@@ -45,10 +45,12 @@ export default function Product({ product }: ProductProps) {
     }
   }
 
+  const pageTitle = `${product.name} | Next Shop`
+
   return (
     <>
       <Head>
-        <title>{product.name} | Next Shop</title>
+        <title>{pageTitle}</title>
       </Head>
 
       <Container>
