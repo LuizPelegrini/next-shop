@@ -12,7 +12,7 @@ export default async function handler(request: NextApiRequest, response: NextApi
   }
 
   // Urls to be used by Stripe for success and cancel operations
-  const successURL = `${process.env.NEXT_APP_DOMAIN}/success`;
+  const successURL = `${process.env.NEXT_APP_DOMAIN}/success?session_id={CHECKOUT_SESSION_ID}`;
   const cancelURL = `${process.env.NEXT_APP_DOMAIN}/`;
 
   const checkoutSession = await stripe.checkout.sessions.create({
