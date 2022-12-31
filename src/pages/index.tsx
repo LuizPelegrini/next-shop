@@ -20,6 +20,7 @@ interface Product {
   name: string;
   imageUrl: string;
   price: string;
+  priceId: string;
 }
 
 interface HomeProps {
@@ -40,7 +41,8 @@ const Home: NextPageWithLayout<HomeProps> = ({ products }) => {
       id: product.id,
       name: product.name,
       price: 100,
-      quantity: 1
+      quantity: 1,
+      priceId: product.priceId
     });
   }
 
@@ -97,6 +99,7 @@ export const getStaticProps: GetStaticProps = async () => {
       name: product.name,
       imageUrl: product.images[0],
       price: formattedPrice,
+      priceId: priceInCents.id
     };
   });
 
