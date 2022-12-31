@@ -11,8 +11,9 @@ import Stripe from 'stripe';
 import Head from 'next/head';
 import { Handbag } from 'phosphor-react';
 import { NextPageWithLayout } from './_app';
-import { ReactElement } from 'react';
+import { ReactElement, useContext } from 'react';
 import { DefaultLayout } from '../components/layouts/DefaultLayout';
+import { CartContext } from '../contexts/CartContext';
 
 interface Product {
   id: string;
@@ -26,12 +27,22 @@ interface HomeProps {
 }
 
 const Home: NextPageWithLayout<HomeProps> = ({ products }) => {
+  const { addToCart } = useContext(CartContext);
   const [sliderRef] = useKeenSlider({
     slides: {
       spacing: 48,
       perView: 2
     }
   })
+
+  function handleAddToCart (product: Product) {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: 100,
+      quantity: 1
+    });
+  }
 
   return (
     <>
@@ -48,7 +59,12 @@ const Home: NextPageWithLayout<HomeProps> = ({ products }) => {
                   <strong>{product.name}</strong>
                   <span>${product.price}</span>
                 </div>
-                <button type="button">
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    handleAddToCart(product)}
+                  }>
                   <Handbag weight="bold" size={32}/>
                 </button>
               </footer>
