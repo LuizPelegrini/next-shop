@@ -2,9 +2,10 @@ import axios from "axios";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
 import Image from "next/image";
-import { ReactElement, useState } from "react";
+import { ReactElement, useContext, useState } from "react";
 import Stripe from "stripe";
 import { DefaultLayout } from "../../components/layouts/DefaultLayout";
+import { CartContext } from "../../contexts/CartContext";
 import { stripe } from "../../lib/stripe";
 import { Container, ImageContainer, ProductDetails } from "../../styles/pages/product";
 import { NextPageWithLayout } from "../_app";
@@ -24,27 +25,37 @@ interface ProductProps {
 }
 
 const Product: NextPageWithLayout<ProductProps> = ({ product }) => {
-  const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false);
+  const { addToCart } = useContext(CartContext);
+  // const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false);
 
-  async function handleCreateCheckoutSession() {
-    try {
-      setIsCreatingCheckoutSession(true);
+  // async function handleCreateCheckoutSession() {
+  //   try {
+  //     setIsCreatingCheckoutSession(true);
 
-      const response = await axios.post('/api/createCheckoutSession', {
-        priceId: product.priceId
-      });
+  //     const response = await axios.post('/api/createCheckoutSession', {
+  //       priceId: product.priceId
+  //     });
 
-      const { checkoutURL } = response.data;
+  //     const { checkoutURL } = response.data;
 
-      // redirect user to Stripe checkout page
-      window.location.href = checkoutURL;
-    } catch (error: any) {
-      // TODO: integrate with observability tool (Datadog / Sentry)
-      alert('Failed on creating checkout session');
-      console.log(error.stack);
+  //     // redirect user to Stripe checkout page
+  //     window.location.href = checkoutURL;
+  //   } catch (error: any) {
+  //     // TODO: integrate with observability tool (Datadog / Sentry)
+  //     alert('Failed on creating checkout session');
+  //     console.log(error.stack);
 
-      setIsCreatingCheckoutSession(false);
-    }
+  //     setIsCreatingCheckoutSession(false);
+  //   }
+  // }
+
+  function handleAddProductToCart() {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price: 100,
+      quantity: 1
+    });
   }
 
   const pageTitle = `${product.name} | Next Shop`
@@ -67,10 +78,9 @@ const Product: NextPageWithLayout<ProductProps> = ({ product }) => {
           <p>{product.description}</p>
 
           <button
-            disabled={isCreatingCheckoutSession}
-            onClick={handleCreateCheckoutSession}
+            onClick={handleAddProductToCart}
           >
-            Buy
+            Add To Cart
           </button>
         </ProductDetails>
       </Container>

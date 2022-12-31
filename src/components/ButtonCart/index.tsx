@@ -11,7 +11,7 @@ export function ButtonCart() {
   }, 0);
 
   return (
-    <Button type="button" state={quantity > 0 ? 'full' : ''} >
+    <Button type="button" state={quantity > 0 ? 'full' : undefined}>
       <Handbag weight="bold" size={24}/>
       { quantity > 0 && <span>{quantity}</span>}
     </Button>
