@@ -10,16 +10,6 @@ import { stripe } from "../../lib/stripe";
 import { Container, ImageContainer, ProductDetails } from "../../styles/pages/product";
 import { NextPageWithLayout } from "../_app";
 
-
-interface Product {
-  id: string;
-  name: string;
-  imageUrl: string;
-  price: string;
-  description: string;
-  priceId: string;
-}
-
 interface ProductProps {
   product: Product;
 }
@@ -51,12 +41,8 @@ const Product: NextPageWithLayout<ProductProps> = ({ product }) => {
 
   function handleAddProductToCart() {
     addToCart({
-      id: product.id,
-      name: product.name,
-      price: 100,
-      priceId: product.priceId,
-      quantity: 1,
-      imageUrl: product.imageUrl
+      ...product,
+      quantity: 1
     });
   }
 
@@ -75,7 +61,7 @@ const Product: NextPageWithLayout<ProductProps> = ({ product }) => {
 
         <ProductDetails>
           <h1>{product.name}</h1>
-          <span>{product.price}</span>
+          <span>{product.formattedPrice}</span>
 
           <p>{product.description}</p>
 
@@ -103,7 +89,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 };
 
-export const getStaticProps: GetStaticProps<any, { id: string }> = async ({ params }) => {
+type StaticProps = {
+  product: Product;
+}
+
+export const getStaticProps: GetStaticProps<StaticProps, { id: string }> = async ({ params }) => {
   // If no params is provided, return 404
   if (!params) {
     return {
@@ -132,9 +122,11 @@ export const getStaticProps: GetStaticProps<any, { id: string }> = async ({ para
         id: product.id,
         name: product.name,
         imageUrl: product.images[0],
-        price: formattedPrice,
+        formattedPrice,
+        priceInCents: priceInCents.unit_amount ?? 0,
         description: product.description,
-        priceId: priceInCents.id
+        priceId: priceInCents.id,
+        quantity: 0
       }
     },
     revalidate: 60 * 60 * 1, // revalidate cache every 1 hour

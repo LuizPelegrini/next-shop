@@ -44,7 +44,7 @@ export function CartItem ({ product }: CartItemProps) {
       </ImageContainer>
       <ProductDetails>
         <span>{product.name}</span>
-        <strong>{product.price}</strong>
+        <strong>{product.formattedPrice}</strong>
         <footer>
           <RemoveButton
             type="button"

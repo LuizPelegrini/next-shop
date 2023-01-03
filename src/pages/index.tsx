@@ -15,14 +15,6 @@ import { ReactElement, useContext } from 'react';
 import { DefaultLayout } from '../components/layouts/DefaultLayout';
 import { CartContext } from '../contexts/CartContext';
 
-interface Product {
-  id: string;
-  name: string;
-  imageUrl: string;
-  price: string;
-  priceId: string;
-}
-
 interface HomeProps {
   products: Product[]
 }
@@ -38,12 +30,8 @@ const Home: NextPageWithLayout<HomeProps> = ({ products }) => {
 
   function handleAddToCart (product: Product) {
     addToCart({
-      id: product.id,
-      name: product.name,
-      price: 100,
-      quantity: 1,
-      priceId: product.priceId,
-      imageUrl: product.imageUrl
+      ...product,
+      quantity: 1
     });
   }
 
@@ -60,7 +48,7 @@ const Home: NextPageWithLayout<HomeProps> = ({ products }) => {
               <footer>
                 <div>
                   <strong>{product.name}</strong>
-                  <span>${product.price}</span>
+                  <span>{product.formattedPrice}</span>
                 </div>
                 <button
                   type="button"
@@ -80,34 +68,41 @@ const Home: NextPageWithLayout<HomeProps> = ({ products }) => {
   );
 }
 
-export const getStaticProps: GetStaticProps = async () => {
+type StaticProps = {
+  products: Product[]
+}
 
+export const getStaticProps: GetStaticProps<StaticProps> = async () => {
   const response = await stripe.products.list({
     expand: ['data.default_price']
   });
 
-  const products = response.data.map(product => {
+  const products = response.data.map<Product>(product => {
     const priceInCents = product.default_price as Stripe.Price;
     const price = (priceInCents.unit_amount ?? 0) / 100;
 
     const formattedPrice = Intl.NumberFormat('en-US', {
       currency: 'USD',
+      style: 'currency',
       minimumFractionDigits: 2,
     }).format(price);
 
     return {
       id: product.id,
       name: product.name,
+      description: product.description,
       imageUrl: product.images[0],
-      price: formattedPrice,
-      priceId: priceInCents.id
+      formattedPrice,
+      priceInCents: priceInCents.unit_amount ?? 0,
+      priceId: priceInCents.id,
+      quantity: 0
     };
   });
 
   return {
     props: {
       products
-    }
+    },
   }
 };
 
