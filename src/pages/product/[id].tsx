@@ -8,6 +8,7 @@ import { DefaultLayout } from "../../components/layouts/DefaultLayout";
 import { CartContext } from "../../contexts/CartContext";
 import { stripe } from "../../lib/stripe";
 import { Container, ImageContainer, ProductDetails } from "../../styles/pages/product";
+import { formatPrice } from "../../utils/currency-formatter";
 import { NextPageWithLayout } from "../_app";
 
 interface ProductProps {
@@ -107,14 +108,9 @@ export const getStaticProps: GetStaticProps<StaticProps, { id: string }> = async
   });
 
   const priceInCents = product.default_price as Stripe.Price;
-  const price = (priceInCents.unit_amount ?? 0) / 100;
+  const price = priceInCents.unit_amount ?? 0;
 
-  const formattedPrice = Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 2,
-  }).format(price);
-
+  const formattedPrice = formatPrice(price);
 
   return {
     props: {

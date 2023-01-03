@@ -14,6 +14,7 @@ import { NextPageWithLayout } from './_app';
 import { ReactElement, useContext } from 'react';
 import { DefaultLayout } from '../components/layouts/DefaultLayout';
 import { CartContext } from '../contexts/CartContext';
+import { formatPrice } from '../utils/currency-formatter';
 
 interface HomeProps {
   products: Product[]
@@ -79,13 +80,9 @@ export const getStaticProps: GetStaticProps<StaticProps> = async () => {
 
   const products = response.data.map<Product>(product => {
     const priceInCents = product.default_price as Stripe.Price;
-    const price = (priceInCents.unit_amount ?? 0) / 100;
+    const price = priceInCents.unit_amount ?? 0;
 
-    const formattedPrice = Intl.NumberFormat('en-US', {
-      currency: 'USD',
-      style: 'currency',
-      minimumFractionDigits: 2,
-    }).format(price);
+    const formattedPrice = formatPrice(price);
 
     return {
       id: product.id,

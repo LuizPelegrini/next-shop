@@ -1,6 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { useContext } from 'react';
 import { CartContext } from '../../contexts/CartContext';
+import { formatPrice } from '../../utils/currency-formatter';
 import { CartItem } from '../CartItem';
 import { Content, Overlay, Footer } from './styles';
 
@@ -8,9 +9,18 @@ import { Content, Overlay, Footer } from './styles';
 export function CartSummaryModal () {
   const { products } = useContext(CartContext);
 
-  const itemsQuantity = products.reduce((acc, product) => {
-    return acc + product.quantity
-  }, 0);
+  const cartSummary = products.reduce((acc, product) => {
+    const quantity = acc.quantity + product.quantity
+    const totalPriceInCents = acc.totalPriceInCents + (product.quantity * product.priceInCents);
+
+    return {
+      quantity,
+      totalPriceInCents
+    }
+  }, {
+    quantity: 0,
+    totalPriceInCents: 0
+  });
 
   return (
     <Dialog.Portal>
@@ -26,11 +36,11 @@ export function CartSummaryModal () {
         <Footer>
           <p>
             <span>Quantity</span>
-            <span>{itemsQuantity} items</span>
+            <span>{cartSummary.quantity} items</span>
           </p>
           <p>
             <strong>Total</strong>
-            <strong>$54.99</strong>
+            <strong>{formatPrice(cartSummary.totalPriceInCents)}</strong>
           </p>
 
           <button>Purchase</button>
