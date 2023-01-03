@@ -63,3 +63,18 @@ export const Footer = styled('footer', {
     }
   }
 });
+
+export const CloseButton = styled(Dialog.Close, {
+  position: 'absolute',
+  right: '1.5rem',
+  top: '1.5rem',
+  backgroundColor: 'transparent',
+  lineHeight: 0,
+  color: '$gray300',
+  border: 0,
+  cursor: 'pointer',
+
+  '&:hover': {
+    color: '$gray500',
+  }
+});
