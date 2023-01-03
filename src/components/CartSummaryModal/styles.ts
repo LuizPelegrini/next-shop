@@ -53,8 +53,13 @@ export const Footer = styled('footer', {
     cursor: 'pointer',
     transition: 'background-color 0.15s',
 
-    '&:hover': {
+    '&:not(:disabled):hover': {
       backgroundColor: '$green300',
+    },
+
+    '&:disabled': {
+      cursor: 'not-allowed',
+      opacity: 0.6,
     }
   }
 });

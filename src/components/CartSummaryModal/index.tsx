@@ -43,7 +43,7 @@ export function CartSummaryModal () {
             <strong>{formatPrice(cartSummary.totalPriceInCents)}</strong>
           </p>
 
-          <button>Purchase</button>
+          <button type="button" disabled={products.length === 0}>Purchase</button>
         </Footer>
       </Content>
     </Dialog.Portal>
