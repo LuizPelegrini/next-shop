@@ -1,13 +1,5 @@
 import { createContext, ReactNode, useState } from 'react';
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  priceId: string;
-  quantity: number;
-}
-
 interface Cart {
   products: Product[];
   addToCart: (newProduct: Product) => void;
@@ -54,8 +46,14 @@ export function CartProvider ({ children }: CartProviderProps) {
     if(existentProduct){
       setProducts((state) => {
         return state.map(product => {
-          if(product.id === id)
-            product.quantity += amount;
+          if(product.id === id){
+            const newProduct: Product = {
+              ...product,
+              quantity: amount
+            };
+
+            return newProduct;
+          }
 
           return product;
         })

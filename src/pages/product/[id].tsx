@@ -55,7 +55,8 @@ const Product: NextPageWithLayout<ProductProps> = ({ product }) => {
       name: product.name,
       price: 100,
       priceId: product.priceId,
-      quantity: 1
+      quantity: 1,
+      imageUrl: product.imageUrl
     });
   }
 

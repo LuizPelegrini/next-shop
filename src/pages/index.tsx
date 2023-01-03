@@ -42,7 +42,8 @@ const Home: NextPageWithLayout<HomeProps> = ({ products }) => {
       name: product.name,
       price: 100,
       quantity: 1,
-      priceId: product.priceId
+      priceId: product.priceId,
+      imageUrl: product.imageUrl
     });
   }
 
