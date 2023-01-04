@@ -1,4 +1,6 @@
-import { createContext, ReactNode, useState } from 'react';
+import { createContext, ReactNode, useReducer } from 'react';
+import { cartReducer, CartState } from '../reducers/cart';
+import { addProductAction, changeProductQuantityAction, removeProductAction, resetCartAction } from '../reducers/cart/actions';
 
 interface Cart {
   products: Product[];
@@ -14,62 +16,37 @@ interface CartProviderProps {
 
 export const CartContext = createContext({} as Cart);
 
+function initialiseCart(): CartState {
+  return {
+    products: []
+  };
+}
+
 export function CartProvider ({ children }: CartProviderProps) {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [cartState, dispatch] = useReducer<typeof cartReducer, { products: Product[] }>(
+    cartReducer,
+    {
+      products: []
+    },
+    initialiseCart
+  );
+
+  const { products } = cartState;
 
   function addToCart(newProduct: Product) {
-    const existentProduct = products.find(product => product.id === newProduct.id);
-
-    if(!existentProduct){
-      setProducts((state) => [...state, newProduct]);
-    } else {
-      setProducts((state) => {
-        return state.map(product => {
-          if(product.id === existentProduct.id){
-            const updatedProduct: Product = {
-              ...product,
-              quantity: product.quantity + 1
-            }
-
-            return updatedProduct;
-          }
-
-          return product;
-        })
-      });
-    }
+    dispatch(addProductAction(newProduct));
   }
 
   function updateProduct(id: string, amount: number) {
-    const existentProduct = products.find(product => product.id === id);
-
-    if(existentProduct){
-      setProducts((state) => {
-        return state.map(product => {
-          if(product.id === id){
-            const newProduct: Product = {
-              ...product,
-              quantity: amount
-            };
-
-            return newProduct;
-          }
-
-          return product;
-        })
-      });
-    }
-
+    dispatch(changeProductQuantityAction(id, amount));
   }
 
   function removeFromCart(id: string) {
-    setProducts(state =>
-      state.filter(product => product.id !== id)
-    );
+    dispatch(removeProductAction(id));
   }
 
   function resetCart() {
-    setProducts([]);
+    dispatch(resetCartAction());
   }
 
   return (
