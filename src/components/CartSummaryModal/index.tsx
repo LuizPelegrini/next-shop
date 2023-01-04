@@ -1,6 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { X } from 'phosphor-react';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { CartContext } from '../../contexts/CartContext';
 import { formatPrice } from '../../utils/currency-formatter';
 import { CartItem } from '../CartItem';
@@ -8,7 +8,9 @@ import { Content, Overlay, Footer, CloseButton } from './styles';
 
 
 export function CartSummaryModal () {
-  const { products } = useContext(CartContext);
+  const { products, checkout } = useContext(CartContext);
+  const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false);
+
 
   const cartSummary = products.reduce((acc, product) => {
     const quantity = acc.quantity + product.quantity
@@ -22,6 +24,23 @@ export function CartSummaryModal () {
     quantity: 0,
     totalPriceInCents: 0
   });
+
+  async function createCheckoutSession() {
+      try {
+        setIsCreatingCheckoutSession(true);
+
+      const checkoutURL = await checkout();
+
+      // redirect user to Stripe checkout page
+      window.location.href = checkoutURL;
+    } catch (error: any) {
+      // TODO: integrate with observability tool (Datadog / Sentry)
+      alert('Failed on creating checkout session');
+      console.log(error.stack);
+
+      setIsCreatingCheckoutSession(false);
+    }
+  }
 
   return (
     <Dialog.Portal>
@@ -44,7 +63,13 @@ export function CartSummaryModal () {
             <strong>{formatPrice(cartSummary.totalPriceInCents)}</strong>
           </p>
 
-          <button type="button" disabled={products.length === 0}>Purchase</button>
+          <button
+            type="button"
+            disabled={products.length === 0 || isCreatingCheckoutSession}
+            onClick={createCheckoutSession}
+          >
+            Purchase
+          </button>
         </Footer>
 
         <CloseButton asChild>

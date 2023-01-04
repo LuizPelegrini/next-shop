@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { createContext, ReactNode, useReducer } from 'react';
 import { cartReducer, CartState } from '../reducers/cart';
 import { addProductAction, changeProductQuantityAction, removeProductAction, resetCartAction } from '../reducers/cart/actions';
@@ -8,6 +9,7 @@ interface Cart {
   updateProduct: (id: string, amount: number) => void;
   removeFromCart: (id: string) => void;
   resetCart: () => void;
+  checkout: () => Promise<string>;
 }
 
 interface CartProviderProps {
@@ -49,6 +51,17 @@ export function CartProvider ({ children }: CartProviderProps) {
     dispatch(resetCartAction());
   }
 
+  async function checkout(): Promise<string> {
+    const { data } = await axios.post('/api/createCheckoutSession', {
+      products: products.map(product => ({
+        priceId: product.priceId,
+        quantity: product.quantity
+      }))
+    });
+
+    return data.checkoutURL as string;
+  }
+
   return (
     <CartContext.Provider
       value={{
@@ -56,7 +69,8 @@ export function CartProvider ({ children }: CartProviderProps) {
         addToCart,
         removeFromCart,
         updateProduct,
-        resetCart
+        resetCart,
+        checkout
       }}
     >
       {children}

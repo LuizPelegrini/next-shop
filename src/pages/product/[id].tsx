@@ -17,28 +17,6 @@ interface ProductProps {
 
 const Product: NextPageWithLayout<ProductProps> = ({ product }) => {
   const { addToCart } = useContext(CartContext);
-  // const [isCreatingCheckoutSession, setIsCreatingCheckoutSession] = useState(false);
-
-  // async function handleCreateCheckoutSession() {
-  //   try {
-  //     setIsCreatingCheckoutSession(true);
-
-  //     const response = await axios.post('/api/createCheckoutSession', {
-  //       priceId: product.priceId
-  //     });
-
-  //     const { checkoutURL } = response.data;
-
-  //     // redirect user to Stripe checkout page
-  //     window.location.href = checkoutURL;
-  //   } catch (error: any) {
-  //     // TODO: integrate with observability tool (Datadog / Sentry)
-  //     alert('Failed on creating checkout session');
-  //     console.log(error.stack);
-
-  //     setIsCreatingCheckoutSession(false);
-  //   }
-  // }
 
   function handleAddProductToCart() {
     addToCart({
@@ -66,9 +44,7 @@ const Product: NextPageWithLayout<ProductProps> = ({ product }) => {
 
           <p>{product.description}</p>
 
-          <button
-            onClick={handleAddProductToCart}
-          >
+          <button onClick={handleAddProductToCart}>
             Add To Cart
           </button>
         </ProductDetails>
