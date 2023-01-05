@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { createContext, ReactNode, useReducer } from 'react';
+import { createContext, ReactNode, useEffect, useReducer } from 'react';
 import { cartReducer, CartState } from '../reducers/cart';
 import { addProductAction, changeProductQuantityAction, removeProductAction, resetCartAction } from '../reducers/cart/actions';
 
@@ -32,6 +32,13 @@ export function CartProvider ({ children }: CartProviderProps) {
     },
     initialiseCart
   );
+
+  useEffect(() => {
+    localStorage.setItem(
+      '@next-shop:cart-state-1.0.0',
+      JSON.stringify(cartState)
+    );
+  }, [cartState]);
 
   const { products } = cartState;
 
