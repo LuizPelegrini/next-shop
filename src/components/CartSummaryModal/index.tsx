@@ -26,8 +26,8 @@ export function CartSummaryModal () {
   });
 
   async function createCheckoutSession() {
-      try {
-        setIsCreatingCheckoutSession(true);
+    try {
+      setIsCreatingCheckoutSession(true);
 
       const checkoutURL = await checkout();
 

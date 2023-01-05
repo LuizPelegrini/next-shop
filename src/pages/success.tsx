@@ -8,13 +8,18 @@ import { ImageContainer, Container, ProductsImages } from "../styles/pages/succe
 
 interface SuccessProps {
   customerName: string;
-  product: {
-    name: string;
+  products: {
+    id: string;
+    quantity: number;
     imageUrl: string;
-  }
+  }[];
 }
 
-export default function Success({ customerName, product }: SuccessProps) {
+export default function Success({ customerName, products }: SuccessProps) {
+  const totalQuantity = products.reduce((acc, product) => {
+    return acc + product.quantity;
+  }, 0);
+
   return (
     <>
       <Head>
@@ -26,22 +31,15 @@ export default function Success({ customerName, product }: SuccessProps) {
         <h1>Purchase completed!</h1>
 
         <ProductsImages>
-          <ImageContainer>
-            <Image src={product.imageUrl} width={120} height={110} alt="" />
-          </ImageContainer>
-          <ImageContainer>
-            <Image src={product.imageUrl} width={120} height={110} alt="" />
-          </ImageContainer>
-          <ImageContainer>
-            <Image src={product.imageUrl} width={120} height={110} alt="" />
-          </ImageContainer>
-          <ImageContainer>
-            <Image src={product.imageUrl} width={120} height={110} alt="" />
-          </ImageContainer>
+          {products.map(product =>
+            <ImageContainer key={product.id}>
+              <Image src={product.imageUrl} width={120} height={110} alt="" />
+            </ImageContainer>
+          )}
         </ProductsImages>
 
         <p>
-          Woohoo! <strong>{customerName}</strong>, your T-shirt <strong>{product.name}</strong> is on its way.
+          Woohoo! <strong>{customerName}</strong>, your new <strong>{totalQuantity}</strong> T-Shirt(s) are on the way.
         </p>
 
         <Link href="/">
@@ -52,7 +50,16 @@ export default function Success({ customerName, product }: SuccessProps) {
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+type StaticProps = {
+  customerName: string | null;
+  products: {
+    id: string;
+    imageUrl: string;
+    quantity: number | null;
+  }[];
+}
+
+export const getServerSideProps: GetServerSideProps<StaticProps> = async ({ query }) => {
   if(!query.session_id){
     return {
       redirect: {
@@ -68,18 +75,21 @@ export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     expand: ['line_items', 'line_items.data.price.product']
   });
 
-
   const customerName = session.customer_details!.name;
-  const product = session.line_items!.data[0].price?.product as Stripe.Product;
+  const products = session.line_items!.data.map(lineItem => {
+    const product = lineItem.price!.product as Stripe.Product;
 
+    return {
+      id: product.id,
+      imageUrl: product.images[0],
+      quantity: lineItem.quantity,
+    }
+  });
 
   return {
     props: {
       customerName,
-      product: {
-        name: product.name,
-        imageUrl: product.images[0]
-      }
+      products
     }
   };
 };
