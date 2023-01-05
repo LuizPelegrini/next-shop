@@ -43,6 +43,7 @@ export const ImageContainer = styled('div', {
   borderRadius: '50%',
   padding: '0.25rem',
   boxShadow: '0 0 50px 2px black',
+  position: 'relative',
 
   display: 'flex',
   alignItems: 'center',
@@ -54,6 +55,16 @@ export const ImageContainer = styled('div', {
 
   img: {
     objectFit: 'cover',
+  },
+
+  span: {
+    padding: '0.1rem 0.5rem',
+    fontWeight: 'bold',
+    borderRadius: 8,
+    position: 'absolute',
+    backgroundColor: '$green500',
+    bottom: 0,
+    transform: 'translateY(50%)',
   }
 });
 
