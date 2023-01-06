@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createContext, ReactNode, useEffect, useReducer } from 'react';
 import { cartReducer, CartState } from '../reducers/cart';
-import { addProductAction, changeProductQuantityAction, removeProductAction, resetCartAction } from '../reducers/cart/actions';
+import { addProductAction, changeProductQuantityAction, initCartStateAction, removeProductAction, resetCartAction } from '../reducers/cart/actions';
 
 interface Cart {
   products: Product[];
@@ -18,26 +18,30 @@ interface CartProviderProps {
 
 export const CartContext = createContext({} as Cart);
 
-function initialiseCart(): CartState {
-  return {
-    products: []
-  };
-}
+const initState: CartState = {
+  products: []
+};
 
 export function CartProvider ({ children }: CartProviderProps) {
-  const [cartState, dispatch] = useReducer<typeof cartReducer, { products: Product[] }>(
-    cartReducer,
-    {
-      products: []
-    },
-    initialiseCart
-  );
+  const [cartState, dispatch] = useReducer(cartReducer, initState);
 
   useEffect(() => {
-    localStorage.setItem(
-      '@next-shop:cart-state-1.0.0',
-      JSON.stringify(cartState)
-    );
+    const cartStateJSON = localStorage.getItem('@next-shop:cart-state-1.0.0');
+
+    if(cartStateJSON){
+      const cartState = JSON.parse(cartStateJSON) as CartState;
+      dispatch(initCartStateAction(cartState));
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log('setItem');
+    if(initState !== cartState){
+      localStorage.setItem(
+        '@next-shop:cart-state-1.0.0',
+        JSON.stringify(cartState)
+      );
+    }
   }, [cartState]);
 
   const { products } = cartState;

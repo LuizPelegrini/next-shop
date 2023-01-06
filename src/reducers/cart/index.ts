@@ -5,6 +5,7 @@ export interface CartState {
 }
 
 export enum ActionTypes {
+  INIT_CART = 'cart_initialised',
   PRODUCT_ADDED = 'product_added',
   QUANTITY_CHANGED = 'quantity_changed',
   PRODUCT_REMOVED = 'product_removed',
@@ -12,6 +13,10 @@ export enum ActionTypes {
 }
 
 export function cartReducer(state: CartState, action: ActionProps): CartState {
+  if(action.type === ActionTypes.INIT_CART) {
+    return action.payload;
+  }
+
   if(action.type === ActionTypes.PRODUCT_ADDED) {
     const newProduct = action.payload.product;
     const existentProduct = state.products.find(product => product.id === newProduct.id);

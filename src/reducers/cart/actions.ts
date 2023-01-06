@@ -1,4 +1,9 @@
-import { ActionTypes } from ".";
+import { ActionTypes, CartState } from ".";
+
+interface InitCartStateActionProps {
+  type: ActionTypes.INIT_CART;
+  payload: CartState;
+}
 
 interface AddProductActionProps {
   type: ActionTypes.PRODUCT_ADDED;
@@ -27,10 +32,18 @@ interface ResetCartActionProps {
 }
 
 export type ActionProps =
+  InitCartStateActionProps |
   AddProductActionProps |
   RemoveProductActionProps |
   ChangeProductQuantityActionProps |
   ResetCartActionProps;
+
+export function initCartStateAction(state: CartState): InitCartStateActionProps {
+  return {
+    type: ActionTypes.INIT_CART,
+    payload: state
+  }
+}
 
 export function addProductAction(product: Product): AddProductActionProps {
   return {
